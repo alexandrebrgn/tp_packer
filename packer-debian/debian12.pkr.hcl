@@ -1,4 +1,3 @@
-# PACKER
 packer {
   required_plugins {
     qemu = {
@@ -8,19 +7,17 @@ packer {
   }
 }
 
-# VARIABLES
-variable "vm_name" { default = "debian12-base" }
-variable "output_dir" { default = "output-debian12" }
+variable "vm_name" { default = "debian13-packer" }
+variable "output_dir" { default = "output-debian13" }
 
-# SOURCE QEMU
 source "qemu" "debian12" {
-  iso_url        = "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.6.0-amd64-netinst.iso"
-  iso_checksum   = "sha256:0f3a4d3b8c9e2f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4"
+  iso_url      = "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-13.4.0-amd64-netinst.iso"
+  iso_checksum = "sha256:0b813535dd76f2ea96eff908c65e8521512c92a0631fd41c95756ffd7d4896dc"
 
   output_directory = var.output_dir
   vm_name          = var.vm_name
 
-  accelerator      = "kvm"
+  accelerator      = "none"
   disk_size        = 20480
   memory           = 1024
   cpus             = 2
@@ -33,15 +30,14 @@ source "qemu" "debian12" {
 
   boot_wait        = "5s"
   boot_command = [
-    "<esc><wait>",
-    "auto preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg ",
+    "<tab><wait>",
+    "auto=true priority=critical preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg ---",
     "<enter>"
   ]
 
   shutdown_command = "sudo shutdown -P now"
 }
 
-# BUILD
 build {
   sources = ["source.qemu.debian12"]
 
